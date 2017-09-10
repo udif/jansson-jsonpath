@@ -9,21 +9,20 @@
 #include <string.h>
 #include "util.h"
 
-static void test_object(void)
+static void test_object(json_t *json)
 {
-    json_t *json;
 
     // {
     //  "obj": {
     //      "int": 2,
     //      "arr": [
     //          3,
-    //          { "nest": 4}
+    //          { "nest": 4},
+    //          [5]
     //      ]
     //  }
     // }
 
-    json = json_pack("{s:{s:i,s:[i,{s:i},[i]]}}", "obj", "int", 2, "arr", 3, "nest", 4, 5);
 
         if(json_path_get(json, "$") != json)
                 fail("json_path_get() fails to get root json");
@@ -228,7 +227,12 @@ static void test_set()
 
 static void run_tests()
 {
-    test_object();
+    json_t *json;
+    json_error_t err;
+    json = json_pack("{s:{s:i,s:[i,{s:i},[i]]}}", "obj", "int", 2, "arr", 3, "nest", 4, 5);
+    test_object(json);
+    json = json_load_file("./test/test_object.json", 0, &err);
+    test_object(json);
     test_array();
     test_null();
     test_set();
